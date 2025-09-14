@@ -9,7 +9,6 @@ import { UpdateClientDto } from "./dto/update-client.dto";
 import { BaseService } from "src/infrastructure/base/base.service";
 import { Client } from "src/core/entity/client.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { CryptoService } from "src/infrastructure/crypt/Crypto";
 import { successRes } from "src/infrastructure/response/success";
 import type { IToken } from "src/infrastructure/token/interface";

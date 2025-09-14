@@ -6,8 +6,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from "./auth/auth.module";
 // import { LessorModule } from './lessor/lessor.module';
 // import { ClientModule } from './client/client.module';
-// import { OrderModule } from './order/order.module';
-// import { PaymentModule } from './payment/payment.module';
+import { OrderModule } from './order/order.module';
+import { PaymentModule } from './payment/payment.module';
 // import { ItemModule } from './item/item.module';
 // import { ImagesModule } from './images/images.module';
 // import { CategoryModule } from './category/category.module';
@@ -53,8 +53,8 @@ import { join } from "path";
     AdminModule,
     // LessorModule,
     // ClientModule,
-    // OrderModule,
-    // PaymentModule,
+    OrderModule,
+    PaymentModule,
     // ItemModule,
     // ImagesModule,
     // CategoryModule,

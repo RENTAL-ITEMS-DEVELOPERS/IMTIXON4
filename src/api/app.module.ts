@@ -8,11 +8,11 @@ import { LessorModule } from "./lessor/lessor.module";
 import { ClientModule } from "./client/client.module";
 import { OrderModule } from "./order/order.module";
 import { PaymentModule } from "./payment/payment.module";
-// import { ItemModule } from './item/item.module';
+import { ItemModule } from "./item/item.module";
 // import { ImagesModule } from './images/images.module';
-// import { CategoryModule } from './category/category.module';
+import { CategoryModule } from "./category/category.module";
 // import { PenaltyModule } from './penalty/penalty.module';
-// import { NotificationModule } from './notification/notification.module';
+import { NotificationModule } from "./notification/notification.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { join } from "path";
@@ -55,11 +55,11 @@ import { join } from "path";
     ClientModule,
     OrderModule,
     PaymentModule,
-    // ItemModule,
+    ItemModule,
     // ImagesModule,
-    // CategoryModule,
+    CategoryModule,
     // PenaltyModule,
-    // NotificationModule,
+    NotificationModule,
     MailerModule,
   ],
 })

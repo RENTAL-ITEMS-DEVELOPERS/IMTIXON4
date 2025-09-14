@@ -5,14 +5,16 @@ import { Notification } from "src/core/entity/notification.entity";
 import { Client } from "src/core/entity/client.entity";
 import { CreateNotificationDto } from "./dto/create-notification.dto";
 import { UpdateNotificationDto } from "./dto/update-notification.dto";
+import type { NotificationRepository } from "src/core/repository/notification.repository";
+import type { ClientRepository } from "src/core/repository/client.repository";
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
-    private readonly notificationRepo: Repository<Notification>,
+    private readonly notificationRepo: NotificationRepository,
     @InjectRepository(Client)
-    private readonly clientRepo: Repository<Client>,
+    private readonly clientRepo: ClientRepository,
   ) {}
 
   async create(dto: CreateNotificationDto) {

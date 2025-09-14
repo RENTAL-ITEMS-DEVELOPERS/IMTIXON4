@@ -8,6 +8,9 @@ import { BaseService } from "src/infrastructure/base/base.service";
 import { Item } from "src/core/entity/item.entity";
 import { Category } from "src/core/entity/category.entity";
 import { Lessor } from "src/core/entity/lessor.entity";
+import type { ItemRepository } from "src/core/repository/Item.repository";
+import type { CategoryRepository } from "src/core/repository/category.repository";
+import type { LessorRepository } from "src/core/repository/lessor.repository";
 
 @Injectable()
 export class ItemService extends BaseService<
@@ -16,10 +19,10 @@ export class ItemService extends BaseService<
   Item
 > {
   constructor(
-    @InjectRepository(Item) private readonly itemRepo: Repository<Item>,
+    @InjectRepository(Item) private readonly itemRepo: ItemRepository,
     @InjectRepository(Category)
-    private readonly categoryRepo: Repository<Category>,
-    @InjectRepository(Lessor) private readonly lessorRepo: Repository<Lessor>,
+    private readonly categoryRepo: CategoryRepository,
+    @InjectRepository(Lessor) private readonly lessorRepo: LessorRepository,
   ) {
     super(itemRepo);
   }

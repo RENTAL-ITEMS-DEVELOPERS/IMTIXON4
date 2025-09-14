@@ -2,29 +2,29 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-import { InjectRepository } from '@nestjs/typeorm';
-import { OrderStatus } from 'src/common/enum/index';
-import { Client } from 'src/core/entity/client.entity';
-import { Wallet } from 'src/core/entity/group-wallet.entity';
-import { Item } from 'src/core/entity/item.entity';
-import { Lessor } from 'src/core/entity/lessor.entity';
-import { Order } from 'src/core/entity/order.entity';
+import { InjectRepository } from "@nestjs/typeorm";
+import { OrderStatus } from "src/common/enum/index";
+import { Client } from "src/core/entity/client.entity";
+import { Wallet } from "src/core/entity/group-wallet.entity";
+import { Item } from "src/core/entity/item.entity";
+import { Lessor } from "src/core/entity/lessor.entity";
+import { Order } from "src/core/entity/order.entity";
 
-import type { ClientRepository } from 'src/core/repository/client.repository';
-import type { walletRepository } from 'src/core/repository/gorup-wallet.repository';
-import type { ItemRepository } from 'src/core/repository/Item.repository';
-import type { LessorRepository } from 'src/core/repository/lessor.repository';
-import type { OrderRepository } from 'src/core/repository/order.reopsitory';
+import type { ClientRepository } from "src/core/repository/client.repository";
+import type { walletRepository } from "src/core/repository/gorup-wallet.repository";
+import type { ItemRepository } from "src/core/repository/Item.repository";
+import type { LessorRepository } from "src/core/repository/lessor.repository";
+import type { OrderRepository } from "src/core/repository/order.reopsitory";
 
-import { config } from 'src/config';
-import { BaseService } from 'src/infrastructure/base/base.service';
-import { successRes } from 'src/infrastructure/response/success';
-import { ISuccess } from 'src/infrastructure/response/success.interface';
-import { DataSource } from 'typeorm';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { config } from "src/config";
+import { BaseService } from "src/infrastructure/base/base.service";
+import { successRes } from "src/infrastructure/response/success";
+import { ISuccess } from "src/infrastructure/response/success.interface";
+import { DataSource } from "typeorm";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { UpdateOrderDto } from "./dto/update-order.dto";
 
 @Injectable()
 export class OrderService extends BaseService<
@@ -55,10 +55,10 @@ export class OrderService extends BaseService<
     } = createOrderDto;
 
     const client = await this.clientRepo.findOne({ where: { id: client_id } });
-    if (!client) throw new NotFoundException('Client not found');
+    if (!client) throw new NotFoundException("Client not found");
 
     const item = await this.itemRepo.findOne({ where: { id: item_id } });
-    if (!item) throw new NotFoundException('Item not found');
+    if (!item) throw new NotFoundException("Item not found");
 
     if (item.quantity - item.rented_quantity < quantity) {
       throw new ConflictException(
@@ -84,7 +84,7 @@ export class OrderService extends BaseService<
       address,
       start_date,
       end_date,
-      notes: notes || '',
+      notes: notes || "",
     });
 
     await this.orderRepo.save(newOrder);
@@ -95,7 +95,7 @@ export class OrderService extends BaseService<
   async update(id: string, updateOrderDto: UpdateOrderDto): Promise<ISuccess> {
     const order = await this.orderRepo.findOne({
       where: { id },
-      relations: ['client_id', 'item_id', 'payment_id'],
+      relations: ["client_id", "item_id", "payment_id"],
     });
 
     if (!order) throw new NotFoundException(`Order not found`);
@@ -118,12 +118,12 @@ export class OrderService extends BaseService<
   async cancelOrder(id: string): Promise<ISuccess> {
     const order = await this.orderRepo.findOne({
       where: { id },
-      relations: ['client_id', 'item_id', 'item_id.lessor_id'],
+      relations: ["client_id", "item_id", "item_id.lessor_id"],
     });
-    if (!order) throw new NotFoundException('Order not found');
+    if (!order) throw new NotFoundException("Order not found");
 
     if (order.status === OrderStatus.CANCELLED) {
-      throw new ConflictException('Order already cancelled');
+      throw new ConflictException("Order already cancelled");
     }
 
     await this.dataSource.transaction(async (manager) => {
@@ -162,10 +162,10 @@ export class OrderService extends BaseService<
 
   async extendOrderDate(id: string, extraDate: Date): Promise<ISuccess> {
     const order = await this.orderRepo.findOne({ where: { id } });
-    if (!order) throw new NotFoundException('Order not found');
-    
+    if (!order) throw new NotFoundException("Order not found");
+
     if (order.status !== OrderStatus.CONFIRMED) {
-      throw new ConflictException('Only active orders can be extended');
+      throw new ConflictException("Only active orders can be extended");
     }
 
     order.extraDays = extraDate;
@@ -178,26 +178,26 @@ export class OrderService extends BaseService<
   async getActiveOrders(): Promise<ISuccess> {
     const orders = await this.orderRepo.find({
       where: { status: OrderStatus.CONFIRMED, is_active: true },
-      relations: ['client_id', 'item_id'],
-      order: { createdAt: 'DESC' },
+      relations: ["client_id", "item_id"],
+      order: { createdAt: "DESC" },
     });
 
     return successRes({
       ...orders,
       endPoint: {
-        url: `http://locahost:${config.API_PORT}/api/v1/payments`,
-        method: 'POST',
+        url: `http://locahost:${config.PORT}/api/v1/payments`,
+        method: "POST",
       },
     });
   }
 
   async getTopItems(): Promise<ISuccess> {
     const result = await this.orderRepo
-      .createQueryBuilder('order')
-      .select('item_id', 'item')
-      .addSelect('COUNT(order.id)', 'totalOrders')
-      .groupBy('order.item_id')
-      .orderBy('totalOrders', 'DESC')
+      .createQueryBuilder("order")
+      .select("item_id", "item")
+      .addSelect("COUNT(order.id)", "totalOrders")
+      .groupBy("order.item_id")
+      .orderBy("totalOrders", "DESC")
       .limit(5)
       .getRawMany();
 
@@ -206,11 +206,11 @@ export class OrderService extends BaseService<
 
   async getMostProfitableItems(): Promise<ISuccess> {
     const result = await this.orderRepo
-      .createQueryBuilder('order')
-      .select('item_id', 'item')
-      .addSelect('SUM(order.amount_sum)', 'totalProfit')
-      .groupBy('order.item_id')
-      .orderBy('totalProfit', 'DESC')
+      .createQueryBuilder("order")
+      .select("item_id", "item")
+      .addSelect("SUM(order.amount_sum)", "totalProfit")
+      .groupBy("order.item_id")
+      .orderBy("totalProfit", "DESC")
       .limit(5)
       .getRawMany();
 

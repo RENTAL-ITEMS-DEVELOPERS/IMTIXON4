@@ -8,15 +8,15 @@ import {
   Patch,
   Post,
   Query,
-} from '@nestjs/common';
-import { OrderQueryDto } from 'src/common/dto/order-query.dto';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { ILike } from 'typeorm';
-import { CreateOrderDto, ExtendOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderService } from './order.service';
+} from "@nestjs/common";
+import { OrderQueryDto } from "src/common/dto/order-query.dto";
+import { QueryPaginationDto } from "src/common/dto/query-pagination.dto";
+import { ILike } from "typeorm";
+import { CreateOrderDto, ExtendOrderDto } from "./dto/create-order.dto";
+import { UpdateOrderDto } from "./dto/update-order.dto";
+import { OrderService } from "./order.service";
 
-@Controller('orders')
+@Controller("orders")
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
@@ -31,10 +31,10 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get('find-all')
+  @Get("find-all")
   async findAll() {
     return this.orderService.findAll({
-      relations: ['client_id', 'item_id', 'payment_id', 'penalty'],
+      relations: ["client_id", "item_id", "payment_id", "penalty"],
     });
   }
 
@@ -52,8 +52,8 @@ export class OrderController {
 
     return this.orderService.findAllWithPagination({
       where,
-      order: { createdAt: 'DESC' },
-      relations: ['client_id', 'item_id', 'payment_id', 'penalty'],
+      order: { createdAt: "DESC" },
+      relations: ["client_id", "item_id", "payment_id", "penalty"],
       skip: page,
       take: limit,
     });
@@ -62,10 +62,10 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get('client/:id')
+  @Get("client/:id")
   async findAllOrdersForClient(
     @Query() queryDto: QueryPaginationDto,
-    @Param('id') id: string,
+    @Param("id") id: string,
   ) {
     const { page, limit, query } = queryDto;
 
@@ -75,8 +75,8 @@ export class OrderController {
 
     return this.orderService.findAllWithPagination({
       where,
-      order: { createdAt: 'DESC' },
-      relations: ['client_id', 'item_id', 'payment_id', 'penalty'],
+      order: { createdAt: "DESC" },
+      relations: ["client_id", "item_id", "payment_id", "penalty"],
       skip: page,
       take: limit,
     });
@@ -85,22 +85,22 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Get(":id")
+  async findOne(@Param("id") id: string) {
     const checkOrder = await this.orderService.findOneById(id);
     if (!checkOrder) throw new NotFoundException(`Not found order`);
 
     return this.orderService.findOneById(id, {
-      relations: ['client_id', 'item_id', 'payment_id', 'penalty'],
+      relations: ["client_id", "item_id", "payment_id", "penalty"],
     });
   }
 
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Patch(':id')
+  @Patch(":id")
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
     return this.orderService.update(id, updateOrderDto);
@@ -109,23 +109,23 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @Delete(":id")
+  async remove(@Param("id") id: string) {
     return this.orderService.remove(id);
   }
 
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Patch(':id/cancel')
-  cancelOrder(@Param('id') id: string) {
+  @Patch(":id/cancel")
+  cancelOrder(@Param("id") id: string) {
     return this.orderService.cancelOrder(id);
   }
 
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get('status/active')
+  @Get("status/active")
   getActiveOrders() {
     return this.orderService.getActiveOrders();
   }
@@ -133,15 +133,15 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Patch(':id/extend')
-  extendOrderDate(@Param('id') id: string, @Body() extraDays: ExtendOrderDto) {
+  @Patch(":id/extend")
+  extendOrderDate(@Param("id") id: string, @Body() extraDays: ExtendOrderDto) {
     return this.orderService.extendOrderDate(id, extraDays.extraDays);
   }
 
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get('stats/top-items')
+  @Get("stats/top-items")
   getTopItems() {
     return this.orderService.getTopItems();
   }
@@ -149,7 +149,7 @@ export class OrderController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.LESSOR, Roles.CLIENT, 'ID')
   // @ApiBearerAuth()
-  @Get('stats/profitable-items')
+  @Get("stats/profitable-items")
   getMostProfitableItems() {
     return this.orderService.getMostProfitableItems();
   }

@@ -4,21 +4,21 @@ import {
   InternalServerErrorException,
   NotFoundException,
   OnModuleInit,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { OrderStatus } from 'src/common/enum/index';
-import { Client } from 'src/core/entity/client.entity';
-import { Wallet } from 'src/core/entity/group-wallet.entity';
-import { Item } from 'src/core/entity/item.entity';
-import { Lessor } from 'src/core/entity/lessor.entity';
-import { Order } from 'src/core/entity/order.entity';
-import { Payment, PaymentStatus } from 'src/core/entity/payment.entity';
-import { BaseService } from 'src/infrastructure/base/base.service';
-import { successRes } from 'src/infrastructure/response/success';
-import { ISuccess } from 'src/infrastructure/response/success.interface';
-import { DataSource, Repository } from 'typeorm';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { OrderStatus } from "src/common/enum/index";
+import { Client } from "src/core/entity/client.entity";
+import { Wallet } from "src/core/entity/group-wallet.entity";
+import { Item } from "src/core/entity/item.entity";
+import { Lessor } from "src/core/entity/lessor.entity";
+import { Order } from "src/core/entity/order.entity";
+import { Payment, PaymentStatus } from "src/core/entity/payment.entity";
+import { BaseService } from "src/infrastructure/base/base.service";
+import { successRes } from "src/infrastructure/response/success";
+import { ISuccess } from "src/infrastructure/response/success.interface";
+import { DataSource, Repository } from "typeorm";
+import { CreatePaymentDto } from "./dto/create-payment.dto";
+import { UpdatePaymentDto } from "./dto/update-payment.dto";
 
 @Injectable()
 export class PaymentService
@@ -41,7 +41,7 @@ export class PaymentService
     if (!wallets.length) {
       const wallet = this.walletRepo.create({ wallet: 0 });
       await this.walletRepo.save(wallet);
-      console.log('Platform wallet initialized.');
+      console.log("Platform wallet initialized.");
     }
   }
 
@@ -50,14 +50,14 @@ export class PaymentService
 
     const order = await this.orderRepo.findOne({
       where: { id: order_id },
-      relations: ['item_id', 'item_id.lessor_id', 'client_id'],
+      relations: ["item_id", "item_id.lessor_id", "client_id"],
     });
-    if (!order) throw new NotFoundException('Order not found');
+    if (!order) throw new NotFoundException("Order not found");
     if (order.status !== OrderStatus.PENDING)
-      throw new BadRequestException('Payment already processed');
+      throw new BadRequestException("Payment already processed");
 
     const client = await this.clientRepo.findOne({ where: { id: client_id } });
-    if (!client) throw new NotFoundException('Client not found');
+    if (!client) throw new NotFoundException("Client not found");
 
     let amount = order.amount_sum;
     const profit = amount * 0.1;
@@ -65,7 +65,7 @@ export class PaymentService
 
     if (+client.wallet < amount)
       // O'
-      throw new BadRequestException('Insufficient wallet balance');
+      throw new BadRequestException("Insufficient wallet balance");
 
     let payment: any; // O'
 
@@ -90,7 +90,7 @@ export class PaymentService
 
       const platformWallet = await manager.findOne(Wallet, { where: {} });
       if (!platformWallet)
-        throw new InternalServerErrorException('Platform wallet not found');
+        throw new InternalServerErrorException("Platform wallet not found");
       await manager.update(
         Wallet,
         { id: platformWallet.id },
@@ -121,7 +121,7 @@ export class PaymentService
     updatePaymentDto: UpdatePaymentDto,
   ): Promise<ISuccess> {
     const payment = await this.paymentRepo.findOne({ where: { id } });
-    if (!payment) throw new NotFoundException('Payment not found');
+    if (!payment) throw new NotFoundException("Payment not found");
 
     Object.assign(payment, updatePaymentDto);
     await this.paymentRepo.save(payment);
@@ -130,25 +130,25 @@ export class PaymentService
 
   async remove(id: string): Promise<ISuccess> {
     const payment = await this.paymentRepo.findOne({ where: { id } });
-    if (!payment) throw new NotFoundException('Payment not found');
+    if (!payment) throw new NotFoundException("Payment not found");
 
     await this.paymentRepo.remove(payment);
-    return successRes({ id, message: 'Payment removed successfully' }, 200);
+    return successRes({ id, message: "Payment removed successfully" }, 200);
   }
 
   async findOneById(id: string): Promise<ISuccess> {
     const payment = await this.paymentRepo.findOne({
       where: { id },
-      relations: ['client_id', 'order_id'],
+      relations: ["client_id", "order_id"],
     });
-    if (!payment) throw new NotFoundException('Payment not found');
+    if (!payment) throw new NotFoundException("Payment not found");
     return successRes(payment, 200);
   }
 
   async getPaymentsByOrderId(orderId: string): Promise<ISuccess> {
     const payments = await this.paymentRepo.find({
       where: { order_id: { id: orderId } },
-      relations: ['client_id', 'order_id'],
+      relations: ["client_id", "order_id"],
     });
     return successRes(payments, 200);
   }
@@ -156,7 +156,7 @@ export class PaymentService
   async getPaymentsByClientId(clientId: string): Promise<ISuccess> {
     const payments = await this.paymentRepo.find({
       where: { client_id: { id: clientId } },
-      relations: ['client_id', 'order_id'],
+      relations: ["client_id", "order_id"],
     });
     return successRes(payments, 200);
   }
@@ -165,15 +165,15 @@ export class PaymentService
     const payment = await this.paymentRepo.findOne({
       where: { id, order_id: { status: OrderStatus.CONFIRMED } }, // O'
       relations: [
-        'client_id',
-        'order_id',
-        'order_id.item_id',
-        'order_id.item_id.lessor_id',
+        "client_id",
+        "order_id",
+        "order_id.item_id",
+        "order_id.item_id.lessor_id",
       ],
     });
-    if (!payment) throw new NotFoundException('Payment not found');
+    if (!payment) throw new NotFoundException("Payment not found");
     if (payment.status !== PaymentStatus.PAID)
-      throw new BadRequestException('Only paid payments can be refunded');
+      throw new BadRequestException("Only paid payments can be refunded");
 
     const client = payment.client_id;
     const order = payment.order_id;
@@ -181,7 +181,7 @@ export class PaymentService
 
     const platformWallet = await this.walletRepo.findOne({ where: {} });
     if (!platformWallet)
-      throw new InternalServerErrorException('Platform wallet not found');
+      throw new InternalServerErrorException("Platform wallet not found");
 
     await this.dataSource.transaction(async (manager) => {
       await manager.update(
@@ -216,7 +216,7 @@ export class PaymentService
 
   async verifyPayment(id: string): Promise<ISuccess> {
     const payment = await this.paymentRepo.findOne({ where: { id } });
-    if (!payment) throw new NotFoundException('Payment not found');
+    if (!payment) throw new NotFoundException("Payment not found");
 
     payment.status = PaymentStatus.PAID;
     await this.paymentRepo.save(payment);

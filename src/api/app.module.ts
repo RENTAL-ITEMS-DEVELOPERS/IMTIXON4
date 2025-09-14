@@ -4,10 +4,10 @@ import { config } from "src/config";
 import { AdminModule } from "./admin/admin.module";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from "./auth/auth.module";
-// import { LessorModule } from './lessor/lessor.module';
-// import { ClientModule } from './client/client.module';
-import { OrderModule } from './order/order.module';
-import { PaymentModule } from './payment/payment.module';
+import { LessorModule } from "./lessor/lessor.module";
+import { ClientModule } from "./client/client.module";
+import { OrderModule } from "./order/order.module";
+import { PaymentModule } from "./payment/payment.module";
 // import { ItemModule } from './item/item.module';
 // import { ImagesModule } from './images/images.module';
 // import { CategoryModule } from './category/category.module';
@@ -51,8 +51,8 @@ import { join } from "path";
     }),
     AuthModule,
     AdminModule,
-    // LessorModule,
-    // ClientModule,
+    LessorModule,
+    ClientModule,
     OrderModule,
     PaymentModule,
     // ItemModule,

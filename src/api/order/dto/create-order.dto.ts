@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 import {
   IsBoolean,
   IsDateString,
@@ -11,8 +11,8 @@ import {
   IsUUID,
   MaxLength,
   Min,
-} from 'class-validator';
-import { OrderStatus } from 'src/common/enum/index';
+} from "class-validator";
+import { OrderStatus } from "src/common/enum/index";
 
 export class CreateOrderDto {
   @ApiProperty()
@@ -86,8 +86,8 @@ export class CreateOrderDto {
 }
 
 export class ExtendOrderDto {
-  @ApiProperty({ example: new Date(), description: 'New extended date' })
-  @IsDateString({}, { message: 'extraDays must be a valid date string' })
+  @ApiProperty({ example: new Date(), description: "New extended date" })
+  @IsDateString({}, { message: "extraDays must be a valid date string" })
   @IsNotEmpty()
   extraDays: Date;
 }
